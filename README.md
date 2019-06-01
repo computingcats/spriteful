@@ -15,7 +15,7 @@ You will need dep, Install instructions [here](https://golang.github.io/dep/docs
 
 ```shell
 go get github.com/computingcats/spriteful
-cd $GOPATH/src/computingcates/spriteful
+cd $GOPATH/src/github.com/computingcats/spriteful
 dep ensure 
 ```
 Why didn't you commit the vendor directory like other Golang projects using dep i've seen?
