@@ -1,3 +1,5 @@
+Modernized to work with [golang/dep](https://github.com/golang/dep)
+
 Spriteful
 =========
 
@@ -5,36 +7,39 @@ Spriteful is an API that provides server boot configuration for pixiecore.
 
 See [pixiecore](https://github.com/danderson/pixiecore).
 
-## Building
+# Build or Install Spriteful
+## Install Dependencies
+As mentioned previously, this project has been forked to update the dependencies management now that gb is pretty much [dead](https://github.com/constabulary/gb/issues/736). golang/dep is now being used and dependencies can be installed by running the following:
 
-To build spriteful, [gb](http://getgb.io/) is needed.
-
-``` sh
-go get github.com/constabulary/gb/...
-```
-
-then, clone the repo:
+You will need dep, Install instructions [here](https://golang.github.io/dep/docs/installation.html).
 
 ```shell
-git clone https://github.com/AcalephStorage/spriteful.git
-cd spriteful
+go get github.com/computingcats/spriteful
+cd $GOPATH/src/computingcates/spriteful
+dep ensure 
 ```
+Why didn't you commit the vendor directory like other Golang projects using dep i've seen?
 
-then, restore dependencies:
+Honestly, preference. For more information, see [here](https://github.com/golang/dep/blob/master/docs/FAQ.md#should-i-commit-my-vendor-directory).
+
+## Installing
 
 ```shell
-gb vendor restore
+go install $GOPATH/src/github.com/computingcats/spriteful
 ```
-
-and finally, build the binary:
-
-```shell
-gb build
-```
-
 Binary can be found in `bin/` directory.
 
-## Running
+If your $GOBIN is configured you should now be able to run:
+```shell
+spriteful --help
+```
+
+## Building
+```shell
+go build $GOPATH/src/github.com/computingcats/spriteful
+```
+
+# Running
 
 To run spriteful, use the following command:
 
