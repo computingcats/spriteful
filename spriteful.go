@@ -19,7 +19,7 @@ import (
 	"os/signal"
 	"text/template"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/emicklei/go-restful"
 )
 
