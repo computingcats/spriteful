@@ -40,17 +40,17 @@ type (
 
 	// Server represents a server with it's boot configuration.
 	Server struct {
-		MacAddress  string                 `json:"mac"`
-		Kernel      string                 `json:"kernel"`
-		Initrd      []string               `json:"initrd"`
-		CommandLine map[string]interface{} `json:"cmdline"`
+		MacAddress  string   `json:"mac"`
+		Kernel      string   `json:"kernel"`
+		Initrd      []string `json:"initrd"`
+		CommandLine string   `json:"cmdline"`
 	}
 
 	// PixieResponse is the response required by pixie core for booting up servers.
 	PixieResponse struct {
-		Kernel      string                 `json:"kernel"`
-		Initrd      []string               `json:"initrd"`
-		CommandLine map[string]interface{} `json:"cmdline,string"`
+		Kernel      string   `json:"kernel"`
+		Initrd      []string `json:"initrd"`
+		CommandLine string   `json:"cmdline"`
 	}
 )
 
@@ -70,9 +70,7 @@ func main() {
 		os.Exit(ExitParseConfigError)
 	}
 	logrus.Infof(`Config "%s" loaded.`, *config)
-
 	sprite.startApi()
-
 }
 
 // startApi starts the Spriteful API.
