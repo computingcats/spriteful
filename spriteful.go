@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"path"
 	"strconv"
 	"strings"
 	"syscall"
@@ -17,7 +16,6 @@ import (
 	"net/http"
 	"net/url"
 	"os/signal"
-	"text/template"
 
 	"github.com/sirupsen/logrus"
 	"github.com/emicklei/go-restful"
@@ -54,7 +52,7 @@ type (
 	}
 )
 
-// main starts Spriteful API using the provided configuration.
+// Starts Spriteful API using the provided configuration.
 func main() {
 	logrus.Info("Starting Spriteful API...")
 	config := flag.String("config", "config.json", "spriteful configuration")
@@ -73,7 +71,7 @@ func main() {
 	sprite.startApi()
 }
 
-// startApi starts the Spriteful API.
+// Starts the Spriteful API.
 func (s *Spriteful) startApi() {
 	container := restful.NewContainer()
 	s.register(container)
@@ -92,7 +90,7 @@ func (s *Spriteful) startApi() {
 	logrus.Info("Shutting down Spriteful API...")
 }
 
-// register registers the endpoints for the API.
+// Registers the endpoints for the API.
 func (s *Spriteful) register(container *restful.Container) {
 	logrus.Info("Creating API endpoints...")
 
@@ -109,7 +107,7 @@ func (s *Spriteful) register(container *restful.Container) {
 	container.Add(ws)
 }
 
-// handleBootRequest handles the http request for server boot configuration.
+// Handles the http request for server boot configuration.
 func (s *Spriteful) handleBootRequest(req *restful.Request, res *restful.Response) {
 	logrus.Info("Received pixiecore request...")
 	macAddress := req.PathParameter("mac-addr")
@@ -143,8 +141,7 @@ func (s *Spriteful) handleBootRequest(req *restful.Request, res *restful.Respons
 	fmt.Fprint(res.ResponseWriter, value)
 }
 
-// findServerConfig returns the server config for the requested MAC address.
-// Returns an error if no configuration is found.
+// Returns the server config or an error for the requested MAC address.
 func (s *Spriteful) findServerConfig(macAddress string) (*Server, error) {
 	logrus.Infof(`requesting configuration for server "%s".`, macAddress)
 	for _, server := range s.Servers {
