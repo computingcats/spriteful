@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"path"
 	"strconv"
 	"strings"
 	"syscall"
@@ -17,7 +16,6 @@ import (
 	"net/http"
 	"net/url"
 	"os/signal"
-	"text/template"
 
 	"github.com/sirupsen/logrus"
 	"github.com/emicklei/go-restful"
@@ -34,7 +32,6 @@ type (
 	Spriteful struct {
 		BindHost   string   `json:"bind-host"`
 		BindPort   int      `json:"bind-port"`
-		Repository string   `json:"repository"`
 		Servers    []Server `json:"servers"`
 	}
 
@@ -54,7 +51,7 @@ type (
 	}
 )
 
-// main starts Spriteful API using the provided configuration.
+// Starts Spriteful API using the provided configuration.
 func main() {
 	logrus.Info("Starting Spriteful API...")
 	config := flag.String("config", "config.json", "spriteful configuration")
@@ -73,7 +70,7 @@ func main() {
 	sprite.startApi()
 }
 
-// startApi starts the Spriteful API.
+// Starts the Spriteful API.
 func (s *Spriteful) startApi() {
 	container := restful.NewContainer()
 	s.register(container)
@@ -92,7 +89,7 @@ func (s *Spriteful) startApi() {
 	logrus.Info("Shutting down Spriteful API...")
 }
 
-// register registers the endpoints for the API.
+// Registers the endpoints for the API.
 func (s *Spriteful) register(container *restful.Container) {
 	logrus.Info("Creating API endpoints...")
 
@@ -106,21 +103,10 @@ func (s *Spriteful) register(container *restful.Container) {
 		Writes(PixieResponse{}))
 	logrus.Info(`pixiecore endpoint created at "api/v1/boot/{mac}".`)
 
-	ws.Route(ws.GET("/static/{resource:*}").To(s.handleResourceRequest).
-		Param(ws.PathParameter("resource", "the resource file")))
-	logrus.Info(`static endpoint created at "api/v1/static/{.*}".`)
-
-	ws.Route(ws.HEAD("/static/{resource:*}").To(s.handleResourceRequest).
-		Param(ws.PathParameter("resource", "the resource file")))
-	logrus.Info(`static endpoint created at "api/v1/static/{.*}".`)
-
-	ws.Route(ws.GET("/template/{template:*}").To(s.handleTemplateRequest).
-		Param(ws.PathParameter("template", "the template file")))
-
 	container.Add(ws)
 }
 
-// handleBootRequest handles the http request for server boot configuration.
+// Handles the http request for server boot configuration.
 func (s *Spriteful) handleBootRequest(req *restful.Request, res *restful.Response) {
 	logrus.Info("Received pixiecore request...")
 	macAddress := req.PathParameter("mac-addr")
@@ -154,70 +140,7 @@ func (s *Spriteful) handleBootRequest(req *restful.Request, res *restful.Respons
 	fmt.Fprint(res.ResponseWriter, value)
 }
 
-// handleResourceRequest handles the http request for static  resources.
-func (s *Spriteful) handleResourceRequest(req *restful.Request, res *restful.Response) {
-	logrus.Info("Received resource request...")
-	resource := req.PathParameter("resource")
-
-	resourcePath, err := s.findResource(resource)
-	if err != nil {
-		res.WriteError(http.StatusNotFound, err)
-	} else {
-		http.ServeFile(res.ResponseWriter, req.Request, resourcePath)
-	}
-}
-
-func (s *Spriteful) handleTemplateRequest(req *restful.Request, res *restful.Response) {
-	logrus.Info("Received template request...")
-	tmpl := req.PathParameter("template")
-
-	tmplPath, err := s.findResource(tmpl)
-	if err != nil {
-		res.WriteError(http.StatusNotFound, err)
-		return
-	}
-
-	data, err := ioutil.ReadFile(tmplPath)
-	if err != nil {
-		res.WriteError(http.StatusBadRequest, err)
-		return
-	}
-
-	// query by default is map[string][]string, this looks awkward during templating,
-	// so we simplify it to just map[string]string
-	tmplData := make(map[string]string)
-	rawQuery := req.Request.URL.RawQuery
-	kvpair := strings.Split(rawQuery, "&")
-	for _, kv := range kvpair {
-		kvsplit := strings.SplitN(kv, "=", 2)
-		if len(kvsplit) != 2 {
-			res.WriteErrorString(http.StatusBadRequest, "invalid query param for template")
-			return
-		}
-		key := kvsplit[0]
-		val := kvsplit[1]
-		val, err := url.QueryUnescape(val)
-		if err != nil {
-			res.WriteError(http.StatusBadRequest, err)
-			return
-		}
-		tmplData[key] = val
-	}
-
-	tf, err := template.New("templateFile").Parse(string(data))
-	if err != nil {
-		res.WriteError(http.StatusBadRequest, err)
-		return
-	}
-
-	err = tf.Execute(res.ResponseWriter, tmplData)
-	if err != nil {
-		res.WriteError(http.StatusBadRequest, err)
-	}
-}
-
-// findServerConfig returns the server config for the requested MAC address.
-// Returns an error if no configuration is found.
+// Returns the server config or an error for the requested MAC address.
 func (s *Spriteful) findServerConfig(macAddress string) (*Server, error) {
 	logrus.Infof(`requesting configuration for server "%s".`, macAddress)
 	for _, server := range s.Servers {
@@ -228,17 +151,4 @@ func (s *Spriteful) findServerConfig(macAddress string) (*Server, error) {
 	}
 	logrus.Warn("configuration not found.")
 	return nil, errors.New(fmt.Sprintf("no configuration defined for %s.", macAddress))
-}
-
-// findResource returns the full resource path if the requested resource exists.
-// Returns an error if the resource does not exist.
-func (s *Spriteful) findResource(resource string) (string, error) {
-	logrus.Infof(`requesting resource "%s".`, resource)
-	resourcePath := path.Join(s.Repository, resource)
-	if _, err := os.Stat(resourcePath); os.IsNotExist(err) {
-		logrus.Warn("resource does not exist.")
-		return "", errors.New(fmt.Sprintf("resource does not exist at %s.", resourcePath))
-	}
-	logrus.Info("resource found.")
-	return resourcePath, nil
 }
