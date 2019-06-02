@@ -32,7 +32,6 @@ type (
 	Spriteful struct {
 		BindHost   string   `json:"bind-host"`
 		BindPort   int      `json:"bind-port"`
-		Repository string   `json:"repository"`
 		Servers    []Server `json:"servers"`
 	}
 

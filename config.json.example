@@ -1,7 +1,6 @@
 {
 	"bind-host": "0.0.0.0",
 	"bind-port": 5000,
-	"repository": "/tmp/files",
 	"servers": [
 		{
 			"mac": "00:00:00:00:00:00",
