@@ -14,8 +14,8 @@ As mentioned previously, this project has been forked to update the dependencies
 You will need dep, Install instructions [here](https://golang.github.io/dep/docs/installation.html).
 
 ```shell
-go get github.com/computingcats/spriteful
-cd $GOPATH/src/github.com/computingcats/spriteful
+go get github.com/rangineer/spriteful
+cd $GOPATH/src/github.com/rangineer/spriteful
 dep ensure 
 ```
 Why didn't you commit the vendor directory like other Golang projects using dep i've seen?
@@ -25,7 +25,7 @@ Honestly, preference. For more information, see [here](https://github.com/golang
 ## Installing
 
 ```shell
-go install $GOPATH/src/github.com/computingcats/spriteful
+go install $GOPATH/src/github.com/rangineer/spriteful
 ```
 Binary can be found in `bin/` directory.
 
@@ -36,7 +36,7 @@ spriteful --help
 
 ## Building
 ```shell
-go build $GOPATH/src/github.com/computingcats/spriteful
+go build $GOPATH/src/github.com/rangineer/spriteful
 ```
 
 # Running
@@ -54,5 +54,5 @@ a sample config file is provided [here](config.json.example).
 To integrate with `pixiecore`, point the `-api` argument to this api:
 
 ```
-$ pixiecore -api http://{bindHost}:{bindPort}/api
+$ pixiecore api http://{bindHost}:{bindPort}/api
 ```
