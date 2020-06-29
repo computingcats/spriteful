@@ -1,4 +1,6 @@
-Modernized to work with [golang/dep](https://github.com/golang/dep)
+~~Modernized to work with [golang/dep](https://github.com/golang/dep)~~
+
+Modernized to work with Go Modules.
 
 Spriteful
 =========
@@ -9,14 +11,14 @@ See [pixiecore](https://github.com/danderson/pixiecore).
 
 # Build or Install Spriteful
 ## Install Dependencies
-As mentioned previously, this project has been forked to update the dependencies management now that gb is pretty much [dead](https://github.com/constabulary/gb/issues/736). golang/dep is now being used and dependencies can be installed by running the following:
+~~As mentioned previously, this project has been forked to update the dependencies management now that gb is pretty much [dead](https://github.com/constabulary/gb/issues/736). golang/dep is now being used and dependencies can be installed by running the following:~~
 
-You will need dep, Install instructions [here](https://golang.github.io/dep/docs/installation.html).
+~~You will need dep, Install instructions [here](https://golang.github.io/dep/docs/installation.html).~~
+
+Now using Go's in-built module dependency manager, ```go mod```. If you'd like to download the dependencies to the vendor folder run
 
 ```shell
-go get github.com/engineerang/spriteful
-cd $GOPATH/src/github.com/engineerang/spriteful
-dep ensure 
+go mod vendor 
 ```
 Why didn't you commit the vendor directory like other Golang projects using dep i've seen?
 
